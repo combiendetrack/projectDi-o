@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<title>PROJECT_23</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap');
+:root{
+ --bg:#050505;--panel:#090909;--panel2:#0d0d0d;--line:#242424;
+ --text:#e9e9e9;--muted:#707070;--dim:#454545;--accent:#bdbdbd;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+body{
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+ display:flex;justify-content:center;min-height:100vh;padding:0 18px;
+}
+body:before{
+ content:"";position:fixed;inset:0;pointer-events:none;opacity:.035;
+ background-image:radial-gradient(#fff .45px,transparent .45px);background-size:4px 4px;
+}
+.app{width:min(880px,100%);padding:28px 0 50px}
+.topbar{
+ height:34px;display:flex;align-items:center;justify-content:space-between;
+ border-bottom:1px solid #171717;color:#555;font:400 9px "DM Mono",monospace;
+ letter-spacing:.18em;text-transform:uppercase;margin-bottom:54px;
+}
+.topbar b{font-weight:400;color:#aaa}
+.screen{display:none}.screen.active{display:block;animation:appear .65s ease both}
+@keyframes appear{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.eyebrow{font:400 9px "DM Mono",monospace;letter-spacing:.25em;color:#555;text-transform:uppercase;margin-bottom:17px}
+h1{
+ margin:0;font-size:clamp(42px,9vw,82px);line-height:.9;font-weight:500;
+ letter-spacing:-.065em;text-transform:uppercase;
+}
+.intro{max-width:540px;color:#696969;font-size:12px;line-height:1.8;margin:22px 0 42px}
+.panel{
+ background:linear-gradient(180deg,#0a0a0a,#070707);border:1px solid #1e1e1e;
+ box-shadow:0 18px 60px rgba(0,0,0,.32);
+}
+.panel-head{
+ display:flex;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #1d1d1d;
+ font:400 8px "DM Mono",monospace;letter-spacing:.18em;color:#555;text-transform:uppercase;
+}
+.fields{padding:2px 17px 17px}
+.field{
+ display:grid;grid-template-columns:105px 1fr;align-items:center;
+ min-height:57px;border-bottom:1px solid #181818;
+}
+.field:last-child{border-bottom:0}
+.field label{font:400 9px "DM Mono",monospace;letter-spacing:.16em;color:#555;text-transform:uppercase}
+input{
+ width:100%;background:transparent;border:0;outline:0;color:#ddd;
+ font:400 13px "DM Mono",monospace;padding:10px 0;
+}
+input::placeholder{color:#303030}
+.actions{display:flex;align-items:center;gap:12px;margin-top:17px}
+button{font-family:"DM Mono",monospace}
+.primary{
+ flex:1;height:47px;border:1px solid #bcbcbc;background:#d9d9d9;color:#050505;
+ font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;
+}
+.primary:hover{background:#f0f0f0}
+.msg{font:400 9px "DM Mono",monospace;color:#666;min-height:16px}
+.meta{
+ display:flex;gap:18px;margin-top:18px;color:#303030;font:400 8px "DM Mono",monospace;
+ letter-spacing:.14em;text-transform:uppercase;
+}
+.access-wrap{max-width:690px}
+.access-code{
+ border:1px solid #202020;background:#080808;margin-top:38px;padding:23px;
+ position:relative;overflow:hidden;
+}
+.access-code:before{
+ content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:#777;
+}
+.access-line{font:400 9px "DM Mono",monospace;color:#555;letter-spacing:.15em;text-transform:uppercase}
+.access-line strong{color:#d3d3d3;font-weight:400}
+.access-text{font-size:12px;color:#696969;line-height:1.8;margin:13px 0 0}
+.ghost{
+ margin-top:28px;color:#252525;font:400 9px "DM Mono",monospace;letter-spacing:.2em;text-transform:uppercase;
+}
+.ghost b{color:#4c4c4c;font-weight:400}
+.secondary{
+ margin-top:25px;height:42px;padding:0 20px;background:transparent;border:1px solid #2b2b2b;color:#8a8a8a;
+ font-size:9px;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;
+}
+.secondary:hover{border-color:#555;color:#ddd}
+
+/* puzzle */
+.puzzle-note{
+ display:flex;justify-content:space-between;gap:25px;align-items:end;margin:18px 0 35px;
+}
+.puzzle-note p{margin:0;max-width:280px;color:#606060;font-size:11px;line-height:1.7;text-align:right}
+.timeline{
+ height:4px;background:#171717;margin:0 0 24px;position:relative;
+}
+.timeline span{display:block;height:100%;width:75%;background:#777}
+.tracks{border:1px solid #1c1c1c;background:#080808}
+.track{
+ position:relative;padding:16px 16px 18px;border-bottom:1px solid #1a1a1a;
+}
+.track:last-child{border-bottom:0}
+.track-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.track-name,.track-state{
+ font:400 8px "DM Mono",monospace;letter-spacing:.18em;text-transform:uppercase
+}
+.track-name{color:#777}.track-state{color:#444}
+.locked .track-state{color:#707070}
+.wave{
+ height:52px;display:flex;align-items:center;gap:1.5px;overflow:hidden;
+ border:1px solid #151515;background:#060606;padding:0 8px;
+}
+.wave span{display:block;width:2px;min-width:2px;background:#3b3b3b;border-radius:1px}
+.locked .wave span{background:#282828}
+.track04{background:linear-gradient(90deg,#090909,#0b0b0b);cursor:pointer}
+.track04 .wave{height:70px;border-color:#222;transition:border-color .2s}
+.track04 .wave span{background:#666;transition:.12s}
+.track04:hover .wave{border-color:#3d3d3d}
+.track04:hover .wave span{background:#888}
+.track04.active .wave{border-color:#555}
+.track04.active .wave span{background:#aaa}
+.signal{
+ display:none;grid-template-columns:1fr 34px 1fr;gap:9px;align-items:center;margin-top:13px;
+}
+.track04.active .signal{display:grid;animation:appear .35s ease}
+.fragment{
+ height:68px;border:1px solid #242424;background:#090909;position:relative;
+ display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.fragment:after{content:"";position:absolute;inset:8px;border:1px dashed #1c1c1c;pointer-events:none}
+.fragment:hover{border-color:#4b4b4b}
+.fragment.selected{border-color:#9b9b9b}
+.fragment .mini{display:flex;align-items:center;gap:1px;height:38px;opacity:.65}
+.fragment .mini i{display:block;width:2px;background:#777}
+.join{height:1px;background:#292929;position:relative}
+.join:after{content:"";position:absolute;left:50%;top:-3px;width:7px;height:7px;border:1px solid #444;transform:translateX(-50%) rotate(45deg);background:#090909}
+.puzzle-hint{
+ margin:13px 0 0;color:#4e4e4e;font:400 9px "DM Mono",monospace;letter-spacing:.08em;line-height:1.7;
+}
+.solve-bar{
+ display:none;margin-top:18px;border-top:1px solid #222;padding-top:15px;
+ justify-content:space-between;align-items:center;
+}
+.solve-bar.show{display:flex;animation:appear .35s ease}
+.solve-bar span{font:400 8px "DM Mono",monospace;letter-spacing:.15em;color:#555;text-transform:uppercase}
+.solve-bar button{height:35px;padding:0 15px;background:#ddd;border:0;color:#080808;font-size:8px;letter-spacing:.16em;text-transform:uppercase}
+
+/* final */
+.final{
+ display:none;text-align:center;margin:70px auto 0;padding:40px 20px 10px;
+ border-top:1px solid #1d1d1d;
+}
+.final.show{display:block;animation:appear .7s ease}
+.final .eyebrow{margin-bottom:20px}
+.final h2{
+ margin:0;font-size:clamp(37px,9vw,78px);line-height:.95;font-weight:500;
+ letter-spacing:-.06em;
+}
+.final .sub{color:#555;font:400 9px "DM Mono",monospace;letter-spacing:.2em;text-transform:uppercase;margin-top:17px}
+.final-rule{height:1px;background:#222;max-width:360px;margin:31px auto}
+.exclu{
+ height:44px;padding:0 25px;background:#d9d9d9;color:#050505;border:0;
+ font-size:9px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;
+}
+.exclu:hover{background:#eee}
+.exclusive{
+ display:none;max-width:470px;margin:19px auto 0;border:1px solid #202020;padding:20px;text-align:left;
+ background:#080808;
+}
+.exclusive.show{display:block;animation:appear .4s ease}
+.exclusive .tag{font:400 8px "DM Mono",monospace;letter-spacing:.18em;color:#555;text-transform:uppercase;margin-bottom:9px}
+.exclusive p{margin:0;color:#666;font-size:11px;line-height:1.8}
+footer{
+ margin-top:55px;border-top:1px solid #111;padding-top:15px;
+ display:flex;justify-content:space-between;color:#2e2e2e;font:400 8px "DM Mono",monospace;letter-spacing:.15em;text-transform:uppercase
+}
+.exclusive-title{font:500 15px Inter,-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important;color:#cfcfcf!important;letter-spacing:.03em;margin-bottom:13px!important}
+.exclusive audio{width:100%;height:38px;display:block;filter:grayscale(1) contrast(.85);opacity:.82}
+.exclusive-note{font:400 8px "DM Mono",monospace!important;letter-spacing:.14em;text-transform:uppercase;color:#383838!important;margin-top:10px!important}
+@media(max-width:600px){
+ .field{grid-template-columns:82px 1fr}
+ .puzzle-note{display:block}.puzzle-note p{text-align:left;margin-top:15px}
+ .signal{grid-template-columns:1fr 18px 1fr;gap:5px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar"><span>PROJECT_23 <b>/ ARCHIVE</b></span><span>23.10</span></header>
+
+<section class="screen active" id="step1">
+ <div class="eyebrow">archive / entry 001</div>
+ <h1>PROJECT<br>23.</h1>
+ <p class="intro">Si tu es arrivé jusqu'ici, tu as déjà trouvé une partie de l'histoire. Entre les informations que tu as récupérées. Rien de plus.</p>
+
+ <div class="panel">
+  <div class="panel-head"><span>project_23 / metadata</span><span>status: locked</span></div>
+  <div class="fields">
+   <div class="field"><label for="project">titre projet</label><input id="project" autocomplete="off" placeholder="—"></div>
+     <div class="field"><label for="t1">track 01</label><input id="t1" autocomplete="off" placeholder="—"></div>
+   <div class="field"><label for="t2">track 02</label><input id="t2" autocomplete="off" placeholder="—"></div>
+   <div class="field"><label for="t3">track 03</label><input id="t3" autocomplete="off" placeholder="—"></div>
+   <div class="field"><label for="date">date</label><input id="date" autocomplete="off" placeholder="—"></div>
+   <div class="field"><label for="projectTitle">titre projet :</label><input id="projectTitle" autocomplete="off" placeholder="—"></div>
+  </div>
+ </div>
+ <div class="actions"><button class="primary" id="validate">verify / continue</button></div>
+ <div class="msg" id="error"></div>
+ <div class="meta"><span>5 entries required</span><span>no account</span><span>no record</span></div>
+</section>
+
+<section class="screen access-wrap" id="step2">
+ <div class="eyebrow">archive / entry 002</div>
+ <h1>access<br>granted.</h1>
+ <div class="access-code">
+  <div class="access-line">verification <strong>complete</strong></div>
+  <p class="access-text">La première couche est complète.<br>Mais ce qui manque n'a jamais été écrit.</p>
+ </div>
+ <div class="ghost">next layer / <b>not indexed</b></div>
+ <button class="secondary" id="toPuzzle">open next layer</button>
+</section>
+
+<section class="screen" id="step3">
+ <div class="eyebrow">archive / entry 003</div>
+ <div class="puzzle-note">
+  <div><h1>il manque<br>un titre.</h1></div>
+  <p>Trois pistes ont été identifiées.<br>Une seule ne l'est pas.</p>
+ </div>
+
+ <div class="timeline"><span></span></div>
+
+ <div class="tracks">
+  <div class="track locked">
+   <div class="track-head"><span class="track-name">track 01</span><span class="track-state">✓ identified</span></div>
+   <div class="wave" data-seed="13"></div>
+  </div>
+  <div class="track locked">
+   <div class="track-head"><span class="track-name">track 02</span><span class="track-state">✓ identified</span></div>
+   <div class="wave" data-seed="29"></div>
+  </div>
+  <div class="track locked">
+   <div class="track-head"><span class="track-name">track 03</span><span class="track-state">✓ identified</span></div>
+   <div class="wave" data-seed="47"></div>
+  </div>
+  <div class="track track04" id="track04">
+   <div class="track-head"><span class="track-name">track 04</span><span class="track-state" id="trackState">? / unknown</span></div>
+   <div class="wave" id="mainWave" aria-label="track 04 waveform"></div>
+
+   <div class="signal" id="signal">
+    <div class="fragment" id="leftFragment" title="fragment"><div class="mini" id="miniLeft"></div></div>
+    <div class="join"></div>
+    <div class="fragment" id="rightFragment" title="fragment"><div class="mini" id="miniRight"></div></div>
+   </div>
+   <p class="puzzle-hint" id="hint">La piste ne se comporte pas comme les autres.</p>
+   <div class="solve-bar" id="solveBar">
+    <span>two fragments / one track</span>
+    <button id="reassemble">reassemble</button>
+   </div>
+  </div>
+ </div>
+
+ <div class="final" id="final">
+  <div class="eyebrow">track 04 / recovered</div>
+  <h2>CASSER EN 2</h2>
+  <div class="sub">23 / 10 · project_23</div>
+  <div class="final-rule"></div>
+  <button class="exclu" id="excluBtn">ouvrir l'exclu</button>
+  <div class="exclusive" id="exclusive">
+   <div class="tag">accès réservé / fichier 004</div>
+   <p class="exclusive-title">FOUTU CASH</p>
+   <audio id="exclusiveAudio" controls preload="metadata">
+    <source src="foutu-cash.wav" type="audio/wav">
+    Ton navigateur ne prend pas en charge la lecture audio.
+   </audio>
+   <p class="exclusive-note">lecture autorisée — PROJECT_23</p>
+  </div>
+ </div>
+</section>
+
+<footer><span>23 / 10</span><span>4 tracks · 1 histoire</span></footer>
+</div>
+
+<script>
+(function(){
+ const $=s=>document.querySelector(s);
+ const norm=s=>s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\s+/g," ").trim();
+ const answers={t1:"merci a vous",t2:"big deal",t3:"pluie",date:"23/10",projectTitle:"satori shit vol.1"};
+
+ function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  $(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+ }
+
+ $("#validate").addEventListener("click",function(){
+  const v={
+   t1:norm($("#t1").value),
+   t2:norm($("#t2").value),
+   t3:norm($("#t3").value),
+   date:norm($("#date").value).replace(/[.\-]/g,"/"),
+   projectTitle:norm($("#projectTitle").value)
+  };
+  if(Object.keys(answers).every(k=>v[k]===answers[k])){
+   $("#error").textContent="";
+   show("#step2");
+  }else{
+   $("#error").textContent="verification failed — une ou plusieurs données sont incorrectes.";
+  }
+ });
+ ["t1","t2","t3","date","projectTitle"].forEach(id=>$("#"+id).addEventListener("keydown",e=>{if(e.key==="Enter")$("#validate").click()}));
+ $("#toPuzzle").addEventListener("click",()=>show("#step3"));
+
+ function wave(el,seed,count){
+  let x=seed*7919+17;
+  for(let i=0;i<count;i++){
+   x=(x*1664525+1013904223)>>>0;
+   const r=x/4294967296;
+   const envelope=Math.sin((i/count)*Math.PI);
+   const h=5+Math.round((7+envelope*33+r*22));
+   const s=document.createElement("span");
+   s.style.height=Math.min(62,Math.max(4,h))+"px";
+   el.appendChild(s);
+  }
+ }
+ document.querySelectorAll(".locked .wave").forEach(el=>wave(el,+el.dataset.seed,118));
+ wave($("#mainWave"),83,155);
+
+ function mini(el,seed){
+  let x=seed*7919+9;
+  for(let i=0;i<29;i++){
+   x=(x*1664525+1013904223)>>>0;
+   const r=x/4294967296,s=document.createElement("i");
+   s.style.height=(7+Math.round(r*27))+"px";el.appendChild(s);
+  }
+ }
+ mini($("#miniLeft"),111);mini($("#miniRight"),222);
+
+ let active=false,left=false,right=false,solved=false;
+ $("#mainWave").addEventListener("click",()=>{
+  if(solved)return;
+  active=true;
+  $("#track04").classList.add("active");
+  $("#trackState").textContent="signal detected";
+  $("#hint").textContent="Deux fragments apparaissent. Ils semblent appartenir à la même piste.";
+ });
+ $("#leftFragment").addEventListener("click",()=>{
+  if(!active||solved)return;
+  left=true;$("#leftFragment").classList.add("selected");check();
+ });
+ $("#rightFragment").addEventListener("click",()=>{
+  if(!active||solved)return;
+  right=true;$("#rightFragment").classList.add("selected");check();
+ });
+ function check(){
+  if(left&&right){
+   $("#trackState").textContent="2 fragments / ready";
+   $("#hint").textContent="Les deux parties ont été retrouvées. Il reste à les réunir.";
+   $("#solveBar").classList.add("show");
+  }
+ }
+ $("#reassemble").addEventListener("click",()=>{
+  if(!(left&&right)||solved)return;
+  solved=true;
+  $("#trackState").textContent="✓ recovered";
+  $("#hint").textContent="signal restored.";
+  $("#reassemble").disabled=true;
+  $("#reassemble").textContent="complete";
+  setTimeout(()=>{
+   $("#final").classList.add("show");
+   setTimeout(()=>$("#final").scrollIntoView({behavior:"smooth",block:"center"}),180);
+  },500);
+ });
+ $("#excluBtn").addEventListener("click",()=>{
+  const e=$("#exclusive");e.classList.toggle("show");
+  $("#excluBtn").textContent=e.classList.contains("show")?"fermer":"ouvrir l'exclu";
+ });
+})();
+</script>
+</body>
+</html>
